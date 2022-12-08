@@ -1,14 +1,14 @@
 import express from 'express';
 import multer from 'multer'
 import mongoose from 'mongoose';
+import cors from 'cors';
 
-import {registerValidation} from './validations/auth.js';
-import {loginValidation} from './validations/login.js';
-import {postCreateValidation} from './validations/postCreate.js';
-import checkAuth from "./utils/checkAuth.js";
+import {registerValidation, loginValidation, postCreateValidation} from "./validations/index.js";
 
-import {getMe, login, register} from './controllers/UserConroller.js';
-import {createPost, getAll, getOne, remove, update} from './controllers/PostConroller.js'
+import {checkAuth, handleValidationErrors} from "./utils/index.js";
+
+import {getMe, login, register} from './controllers/UserController.js';
+import {createPost, getAll, getOne, remove, update} from './controllers/PostController.js';
 
 const port = process.env.PORT || 4444;
 
@@ -27,6 +27,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage});
 
 app.use(express.json());
+app.use(cors());
 //Теперь express знает про uploads (static)
 app.use('/uploads', express.static('uploads'));
 
@@ -40,10 +41,10 @@ app.get('/', (req, res) => {
 });
 
 // Авторизация пользователя:
-app.post('/auth/login', loginValidation, login);
+app.post('/auth/login', loginValidation, handleValidationErrors, login);
 
 // Регистрация пользователя:
-app.post('/auth/register', registerValidation, register);
+app.post('/auth/register', registerValidation, handleValidationErrors, register);
 
 //Получение данных пользователя,
 // checkAuth - это middleware
@@ -59,9 +60,9 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
 app.get('/posts', getAll);
 app.get('/posts/:id', getOne);
 //Нужен доступ:
-app.post('/posts', checkAuth, postCreateValidation, createPost);
+app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, createPost);
 app.delete('/posts/:id', checkAuth, remove);
-app.patch('/posts/:id', checkAuth, postCreateValidation, update);
+app.patch('/posts/:id', checkAuth, postCreateValidation, handleValidationErrors, update);
 
 app.listen(port, (err) => {
     if (err) {

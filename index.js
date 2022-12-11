@@ -8,7 +8,7 @@ import {registerValidation, loginValidation, postCreateValidation} from "./valid
 import {checkAuth, handleValidationErrors} from "./utils/index.js";
 
 import {getMe, login, register} from './controllers/UserController.js';
-import {createPost, getAll, getOne, remove, update} from './controllers/PostController.js';
+import {createPost, getAll, getLastTags, getOne, remove, update} from './controllers/PostController.js';
 
 const port = process.env.PORT || 4444;
 
@@ -56,8 +56,11 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
     });
 });
 
+app.get('/tags', getLastTags)
+
 //Создание, получение, обновление и удаление статьи
 app.get('/posts', getAll);
+app.get('/posts/tags', getLastTags);
 app.get('/posts/:id', getOne);
 //Нужен доступ:
 app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, createPost);

@@ -8,7 +8,16 @@ import {registerValidation, loginValidation, postCreateValidation} from "./valid
 import {checkAuth, handleValidationErrors} from "./utils/index.js";
 
 import {getMe, login, register} from './controllers/UserController.js';
-import {createPost, getAll, getLastTags, getOne, remove, update} from './controllers/PostController.js';
+import {
+    createPost,
+    getAll,
+    getLastTags,
+    getMostPopularPosts,
+    getNewPosts,
+    getOne,
+    remove,
+    update
+} from './controllers/PostController.js';
 
 const port = process.env.PORT || 4444;
 
@@ -32,7 +41,8 @@ app.use(cors());
 app.use('/uploads', express.static('uploads'));
 
 mongoose
-    .connect('mongodb+srv://KarinaOlenina:uF2$G*dA6vHXg!D@cluster0.vlet6is.mongodb.net/blog?retryWrites=true&w=majority')
+    // .connect('mongodb+srv://KarinaOlenina:uF2$G*dA6vHXg!D@cluster0.vlet6is.mongodb.net/blog?retryWrites=true&w=majority')
+    .connect('mongodb://localhost:27017/blog')
     .then(() => console.log('DB: OK'))
     .catch(err => console.log('DB err', err));
 
@@ -61,6 +71,8 @@ app.get('/tags', getLastTags)
 //Создание, получение, обновление и удаление статьи
 app.get('/posts', getAll);
 app.get('/posts/tags', getLastTags);
+app.get('/posts/new', getNewPosts);
+app.get('/posts/popular', getMostPopularPosts);
 app.get('/posts/:id', getOne);
 //Нужен доступ:
 app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, createPost);

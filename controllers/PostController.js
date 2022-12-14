@@ -32,6 +32,32 @@ export const getLastTags = async (req, res) => {
         });
     }
 };
+export const getNewPosts = async (req, res) => {
+    try {
+        const posts = await PostModel.find().sort({createdAt: -1}).exec();
+
+        res.json(posts);
+
+    } catch (err) {
+        console.log(err + "Failed to retrieve last tags (×﹏×)")
+        res.status(500).json({
+            message: "Failed to retrieve last tags (×﹏×)"
+        });
+    }
+};
+export const getMostPopularPosts = async (req, res) => {
+    try {
+        const posts = await PostModel.find().sort({viewsCount: -1}).exec();
+
+        res.json(posts);
+
+    } catch (err) {
+        console.log(err + "Failed to retrieve last tags (×﹏×)")
+        res.status(500).json({
+            message: "Failed to retrieve last tags (×﹏×)"
+        });
+    }
+};
 
 export const getOne = async (req, res) => {
     try {
@@ -61,7 +87,7 @@ export const getOne = async (req, res) => {
 
                 res.json(doc);
             }
-        );
+        ).populate('author');
     } catch (err) {
         console.log(err + "Failed to retrieve all articles (×﹏×)")
         res.status(500).json({
@@ -109,7 +135,7 @@ export const createPost = async (req, res) => {
             title: req.body.title,
             text: req.body.text,
             imageUrl: req.body.imageUrl,
-            tags: req.body.tags,
+            tags: req.body.tags.split(','),
             author: req.userId,
         });
 
@@ -135,7 +161,7 @@ export const update = async (req, res) => {
             title: req.body.title,
             text: req.body.text,
             imageUrl: req.body.imageUrl,
-            tags: req.body.tags,
+            tags: req.body.tags.split(','),
             author: req.userId,
             },
         );

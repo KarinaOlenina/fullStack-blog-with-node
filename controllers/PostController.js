@@ -32,9 +32,25 @@ export const getLastTags = async (req, res) => {
         });
     }
 };
+
+export const getByTags = async (req, res) => {
+    try {
+
+        const tags = req.params.tag
+        const posts = await PostModel.find({tags : tags}).populate('author').exec();
+
+        res.json(posts);
+
+    } catch (err) {
+        console.log(err + "Failed to retrieve last tags (×﹏×)")
+        res.status(500).json({
+            message: "Failed to retrieve last tags (×﹏×)"
+        });
+    }
+};
 export const getNewPosts = async (req, res) => {
     try {
-        const posts = await PostModel.find().sort({createdAt: -1}).exec();
+        const posts = await PostModel.find().sort({createdAt: -1}).populate('author').exec();
 
         res.json(posts);
 
@@ -47,7 +63,7 @@ export const getNewPosts = async (req, res) => {
 };
 export const getMostPopularPosts = async (req, res) => {
     try {
-        const posts = await PostModel.find().sort({viewsCount: -1}).exec();
+        const posts = await PostModel.find().sort({viewsCount: -1}).populate('author').exec();
 
         res.json(posts);
 
@@ -155,14 +171,14 @@ export const update = async (req, res) => {
     try {
         const postId = req.params.id;
         await PostModel.updateOne({
-            _id: postId,
+                _id: postId,
             },
             {
-            title: req.body.title,
-            text: req.body.text,
-            imageUrl: req.body.imageUrl,
-            tags: req.body.tags.split(','),
-            author: req.userId,
+                title: req.body.title,
+                text: req.body.text,
+                imageUrl: req.body.imageUrl,
+                tags: req.body.tags.split(','),
+                author: req.userId,
             },
         );
 

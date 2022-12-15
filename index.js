@@ -10,7 +10,7 @@ import {checkAuth, handleValidationErrors} from "./utils/index.js";
 import {getMe, login, register} from './controllers/UserController.js';
 import {
     createPost,
-    getAll,
+    getAll, getByTags,
     getLastTags,
     getMostPopularPosts,
     getNewPosts,
@@ -71,6 +71,7 @@ app.get('/tags', getLastTags)
 //Создание, получение, обновление и удаление статьи
 app.get('/posts', getAll);
 app.get('/posts/tags', getLastTags);
+app.get('/posts/tags/:tag', getByTags);
 app.get('/posts/new', getNewPosts);
 app.get('/posts/popular', getMostPopularPosts);
 app.get('/posts/:id', getOne);
